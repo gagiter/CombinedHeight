@@ -62,9 +62,9 @@ class Data(Dataset):
             depth_image = Image.open(depth_file)
             depth_image = TF.to_grayscale(depth_image)
 
-            color_image = TF.scale(color_image, 800)
-            label_image = TF.scale(label_image, 800)
-            depth_image = TF.scale(depth_image, 800)
+            color_image = TF.resize(color_image, 800)
+            label_image = TF.resize(label_image, 800)
+            depth_image = TF.resize(depth_image, 800)
             self.cache_triples[idx] = (color_image, label_image, depth_image)
         else:
             color_image = cache_triple[0]
