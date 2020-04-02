@@ -11,6 +11,8 @@ conda/pip install pytorch
 ```
 conda/pip install other
 ```
+
+we use [segmentation-models-pytorch](https://pypi.org/project/segmentation-models-pytorch/) as baseline network. 
 ## Dataset
 We pre-process the dataset of [Postdam](http://www2.isprs.org/commissions/comm3/wg4/2d-sem-label-potsdam.html) and [Vaihingen](http://www2.isprs.org/commissions/comm3/wg4/2d-sem-label-vaihingen.html) at
 
