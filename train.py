@@ -19,7 +19,7 @@ parser.add_argument('--batch-size', type=int, default=16, metavar='N',
                     help='input batch size for training (default: 64)')
 parser.add_argument('--data_dir', type=str, default='data/Postdam',
                     help='where to load data')
-parser.add_argument('--resume', action='store_true', default=True,
+parser.add_argument('--resume', action='store_true', default=False,
                     help='resume training from checkpoint')
 parser.add_argument('--no-cuda', action='store_true', default=False,
                     help='disables CUDA training')
