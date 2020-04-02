@@ -1,1 +1,11 @@
 /.idea
+/data/Postdam/label
+/data/Postdam/color
+/data/Postdam/height
+/data/Vaihingen/label
+/data/Vaihingen/color
+/data/Vaihingen/height
+/checkpoint
+/runs
+/util
+/__pycache__
