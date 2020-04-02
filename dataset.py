@@ -20,6 +20,7 @@ class Vaihgen(Dataset):
 class Data(Dataset):
     def __init__(self, data_dir, mode='train'):
         self.file_triples = []
+        self.cache_triples = []
         self.data_dir = data_dir
         self.mode = mode
         self.read_triples()
@@ -41,6 +42,7 @@ class Data(Dataset):
                 if not line.startswith('#'):
                     triple = line.split()
                     self.file_triples.append((triple[0], triple[1], triple[2]))
+                    self.cache_triples.append(None)
                 line = file.readline()
 
     def __len__(self):
@@ -53,14 +55,22 @@ class Data(Dataset):
         label_file = os.path.join(self.data_dir, 'label', triple[1])
         depth_file = os.path.join(self.data_dir, 'height', triple[2])
 
-        color_image = Image.open(color_file)
-        label_image = Image.open(label_file)
-        depth_image = Image.open(depth_file)
-        depth_image = TF.to_grayscale(depth_image)
+        cache_triple = self.cache_triples[idx]
+        if cache_triple is None:
+            color_image = Image.open(color_file)
+            label_image = Image.open(label_file)
+            depth_image = Image.open(depth_file)
+            depth_image = TF.to_grayscale(depth_image)
 
-        color_image = TF.resize(color_image, (512, 512))
-        label_image = TF.resize(label_image, (512, 512))
-        depth_image = TF.resize(depth_image, (512, 512))
+            color_image = TF.resize(color_image, (512, 512))
+            label_image = TF.resize(label_image, (512, 512))
+            depth_image = TF.resize(depth_image, (512, 512))
+
+            self.cache_triples[idx] = (color_image, label_image, depth_image)
+        else:
+            color_image = cache_triple[0]
+            label_image = cache_triple[1]
+            depth_image = cache_triple[2]
 
         # crop_paras = RandomCrop.get_params(color_image, output_size=(512, 512))
         # color_image = TF.crop(color_image, *crop_paras)
