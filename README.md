@@ -11,3 +11,7 @@ conda/pip install pytorch
 ```
 conda/pip install other
 ```
+## Dataset
+
+[Postdam](https://pan.baidu.com/s/1GcgVoPfsQIRQSzmhec0RVA) 提取码：pbts
+[Vaihingen](https://pan.baidu.com/s/1JyHje8kzFSgGB5qSKEzIDQ) 提取码：tju3 
