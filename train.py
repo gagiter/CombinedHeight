@@ -31,8 +31,8 @@ parser.add_argument('--momentum', type=float, default=0.5, metavar='M',
                     help='SGD momentum (default: 0.5)')
 parser.add_argument('--epoch_start', type=int, default=0, metavar='N',
                     help='number of start epoch')
-parser.add_argument('--epoch_end', type=int, default=5000, metavar='N',
-                    help='number of end epoch')
+parser.add_argument('--epoch_num', type=int, default=5000, metavar='N',
+                    help='number of epochs to train')
 parser.add_argument('--summary_freq', type=int, default=1, metavar='N',
                     help='how frequency to summary')
 
@@ -58,7 +58,7 @@ if args.resume:
     optimiser.load_state_dict(torch.load('checkpoint/optimiser.pth'))
     args.epoch_start = torch.load('checkpoint/epoch.pth')['epoch']
 
-for epoch in range(args.epoch_start, args.epoch_end):
+for epoch in range(args.epoch_start, args.epoch_start + args.epoch_num):
     model.train()
     train_losses = []
     for data in train_loader:
