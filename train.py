@@ -7,6 +7,7 @@ from torch import nn, optim
 from torch.nn import functional as F
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
+from model import Net
 
 
 parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
@@ -47,4 +48,32 @@ train_loader = DataLoader(train_data, batch_size=args.batch_size,
                           shuffle=True, num_workers=4, pin_memory=True)
 test_loader = DataLoader(test_data, batch_size=args.batch_size,
                          num_workers=4, pin_memory=True)
+
+
+model = Net().to(device)
+optimiser = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum)
+
+if args.resume:
+    model.load_state_dict(torch.load('model.pth'))
+    optimiser.load_state_dict(torch.load('optimiser.pth'))
+
+model.train()
+train_losses = []
+
+for i, (data, target) in enumerate(train_loader):
+    data = data.to(device=device, non_blocking=True)
+    target = target.to(device=device, non_blocking=True)
+    optimiser.zero_grad()
+    output = model(data)
+    loss = F.nll_loss(output, target)
+    loss.backward()
+    train_losses.append(loss.item())
+    optimiser.step()
+
+    if i % 10 == 0:
+        print(i, loss.item())
+        torch.save(model.state_dict(), 'model.pth')
+        torch.save(optimiser.state_dict(), 'optimiser.pth')
+        torch.save(train_losses, 'train_losses.pth')
+
 
