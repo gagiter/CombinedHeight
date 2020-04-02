@@ -8,11 +8,12 @@ This is the code that corresponding to the paper of CombinedHeight: Combined Gui
 conda/pip install pytorch
 ```
 ### Install other
+we use [segmentation-models-pytorch](https://pypi.org/project/segmentation-models-pytorch/) as baseline network with 
+
 ```
-conda/pip install other
+pip install segmentation-models-pytorch
 ```
 
-we use [segmentation-models-pytorch](https://pypi.org/project/segmentation-models-pytorch/) as baseline network. 
 ## Dataset
 We pre-process the dataset of [Postdam](http://www2.isprs.org/commissions/comm3/wg4/2d-sem-label-potsdam.html) and [Vaihingen](http://www2.isprs.org/commissions/comm3/wg4/2d-sem-label-vaihingen.html) at
 
