@@ -62,24 +62,23 @@ class Data(Dataset):
             depth_image = Image.open(depth_file)
             depth_image = TF.to_grayscale(depth_image)
 
-            color_image = TF.resize(color_image, (512, 512))
-            label_image = TF.resize(label_image, (512, 512))
-            depth_image = TF.resize(depth_image, (512, 512))
-
+            color_image = TF.scale(color_image, 800)
+            label_image = TF.scale(label_image, 800)
+            depth_image = TF.scale(depth_image, 800)
             self.cache_triples[idx] = (color_image, label_image, depth_image)
         else:
             color_image = cache_triple[0]
             label_image = cache_triple[1]
             depth_image = cache_triple[2]
 
-        # crop_paras = RandomCrop.get_params(color_image, output_size=(512, 512))
-        # color_image = TF.crop(color_image, *crop_paras)
-        # label_image = TF.crop(label_image, *crop_paras)
-        # depth_image = TF.crop(depth_image, *crop_paras)
+        crop_paras = RandomCrop.get_params(color_image, output_size=(512, 512))
+        color_image = TF.crop(color_image, *crop_paras)
+        label_image = TF.crop(label_image, *crop_paras)
+        depth_image = TF.crop(depth_image, *crop_paras)
 
         color_image = TF.to_tensor(color_image)
         label_image = TF.to_tensor(label_image)
         depth_image = TF.to_tensor(depth_image)
 
-        return (color_image, label_image, depth_image)
+        return color_image, label_image, depth_image
 
