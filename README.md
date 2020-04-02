@@ -4,7 +4,10 @@ This is the code that corresponding to the paper of CombinedHeight: Combined Gui
 ## Install
 pytorch and other
 ### Intall pytorch
+'''
 conda/pip install pytorch
-
+'''
 ### Install other
+'''
 conda/pip install other
+'''
