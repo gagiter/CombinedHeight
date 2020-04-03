@@ -11,13 +11,14 @@ from model import Net
 import dataset
 import segmentation_models_pytorch as smp
 from torch.utils.tensorboard import SummaryWriter
+import regular
 
 
 parser = argparse.ArgumentParser(description='PyTorch implementation of CombinedHeight')
 
 parser.add_argument('--batch-size', type=int, default=16, metavar='N',
                     help='input batch size for training (default: 64)')
-parser.add_argument('--data_dir', type=str, default='data/Postdam',
+parser.add_argument('--dataset', type=str, default='Postdam',
                     help='where to load data')
 parser.add_argument('--resume', action='store_true', default=False,
                     help='resume training from checkpoint')
@@ -31,7 +32,7 @@ parser.add_argument('--momentum', type=float, default=0.5, metavar='M',
                     help='SGD momentum (default: 0.5)')
 parser.add_argument('--epoch_start', type=int, default=0, metavar='N',
                     help='number of start epoch')
-parser.add_argument('--epoch_num', type=int, default=5000, metavar='N',
+parser.add_argument('--epoch_num', type=int, default=50000, metavar='N',
                     help='number of epochs to train')
 parser.add_argument('--summary_freq', type=int, default=1, metavar='N',
                     help='how frequency to summary')
@@ -41,8 +42,8 @@ args = parser.parse_args()
 use_cuda = torch.cuda.is_available() and not args.no_cuda
 device = torch.device('cuda:%d' % args.gpu_id if use_cuda else 'cpu')
 
-train_data = dataset.Data(args.data_dir, 'train')
-val_data = dataset.Data(args.data_dir, 'val')
+train_data = dataset.Data(os.path.join('data', args.dataset), 'train')
+val_data = dataset.Data(os.path.join('data', args.dataset), 'val')
 
 train_loader = DataLoader(train_data, batch_size=args.batch_size, shuffle=True)
 val_loader = DataLoader(val_data, batch_size=args.batch_size)
@@ -54,9 +55,9 @@ optimiser = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum)
 writer = SummaryWriter()
 
 if args.resume:
-    model.load_state_dict(torch.load('checkpoint/model.pth'))
-    optimiser.load_state_dict(torch.load('checkpoint/optimiser.pth'))
-    args.epoch_start = torch.load('checkpoint/epoch.pth')['epoch']
+    model.load_state_dict(torch.load(os.path.join('checkpoint', args.dataset, 'model.pth')))
+    optimiser.load_state_dict(torch.load(os.path.join('checkpoint', args.dataset, 'optimiser.pth')))
+    args.epoch_start = torch.load(os.path.join('checkpoint', args.dataset, 'epoch.pth'))['epoch']
 
 for epoch in range(args.epoch_start, args.epoch_start + args.epoch_num):
     model.train()
@@ -67,7 +68,7 @@ for epoch in range(args.epoch_start, args.epoch_start + args.epoch_num):
         depth = data[2].to(device=device)
         optimiser.zero_grad()
         output = model(color)
-        # plannar, overlap = regularize(output, label)
+        planarity, overlaping = regular.regular(output, label)
         loss = F.l1_loss(output, depth)
         loss.backward()
         train_losses.append(loss.item())
@@ -81,16 +82,19 @@ for epoch in range(args.epoch_start, args.epoch_start + args.epoch_num):
         writer.add_image('image/label', label[0], global_step=epoch)
         writer.add_image('image/depth', depth[0], global_step=epoch)
         writer.add_image('image/predict', output[0], global_step=epoch)
+        writer.add_image('image/normal', planarity[0], global_step=epoch)
+        writer.add_image('image/overlap', overlaping[0], global_step=epoch)
 
-        torch.save(model.state_dict(), 'checkpoint/model.pth')
-        torch.save(optimiser.state_dict(), 'checkpoint/optimiser.pth')
-        torch.save({'epoch': epoch}, 'checkpoint/epoch.pth')
+        torch.save(model.state_dict(), os.path.join('checkpoint', args.dataset, 'model.pth'))
+        torch.save(optimiser.state_dict(), os.path.join('checkpoint', args.dataset, 'optimiser.pth'))
+        torch.save({'epoch': epoch}, os.path.join('checkpoint', args.dataset, 'epoch.pth'))
         # torch.save(train_losses, 'train_losses.pth')
 
 writer.close()
 #
 # def regularize(depth, label):
 #
+
 
 
 
