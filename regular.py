@@ -9,9 +9,11 @@ def grad(x):
     filter_y = filter_y.reshape(1, 1, 3, 3)
     unbined = torch.unbind(x, dim=1)
     conv.weight = torch.nn.Parameter(filter_x, requires_grad=False)
+    conv.to(x.device)
     gdx = [conv(c.unsqueeze(1)) for c in unbined]
     gdx = torch.cat(gdx, dim=1)
     conv.weight = torch.nn.Parameter(filter_y, requires_grad=False)
+    conv.to(x.device)
     gdy = [conv(c.unsqueeze(1)) for c in unbined]
     gdy = torch.cat(gdy, dim=1)
     return gdx, gdy
@@ -27,7 +29,7 @@ def height_to_pos(height):
     return pos
 
 
-def planar(height):
+def plane(height):
     pos = height_to_pos(height)
     gdx, gdy = grad(height)
     n_z = torch.ones_like(height) / height.shape[-1]
@@ -49,14 +51,14 @@ def overlap(height, label):
     return o
 
 
-def regular(height, label):
-    n, _ = planar(height)
-    o = overlap(height, label)
-    return n, o
+# def regular(height, label):
+#     n, _ = planar(height)
+#     o = overlap(height, label)
+#     return n, o
 
 
 if __name__ == '__main__':
-    height = torch.rand((1, 1, 512, 512))
-    label = torch.rand((1, 3, 512, 512))
-    n, o = regular(height, label)
+    height = torch.rand((1, 1, 512, 512), device='cuda')
+    label = torch.rand((1, 3, 512, 512), device='cuda')
+    # n, o = regular(height, label)
 
