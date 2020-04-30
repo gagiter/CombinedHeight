@@ -18,11 +18,12 @@ class Vaihgen(Dataset):
 
 
 class Data(Dataset):
-    def __init__(self, data_dir, mode='train'):
+    def __init__(self, data_dir, size=512, mode='train'):
         self.file_triples = []
         self.cache_triples = []
         self.data_dir = data_dir
         self.mode = mode
+        self.size = size
         self.read_triples()
 
     def read_triples(self):
@@ -62,16 +63,16 @@ class Data(Dataset):
             depth_image = Image.open(depth_file)
             depth_image = TF.to_grayscale(depth_image)
 
-            color_image = TF.resize(color_image, 800)
-            label_image = TF.resize(label_image, 800)
-            depth_image = TF.resize(depth_image, 800)
+            color_image = TF.resize(color_image, self.size * 2)
+            label_image = TF.resize(label_image, self.size * 2)
+            depth_image = TF.resize(depth_image, self.size * 2)
             self.cache_triples[idx] = (color_image, label_image, depth_image)
         else:
             color_image = cache_triple[0]
             label_image = cache_triple[1]
             depth_image = cache_triple[2]
 
-        crop_paras = RandomCrop.get_params(color_image, output_size=(512, 512))
+        crop_paras = RandomCrop.get_params(color_image, output_size=(self.size, self.size))
         color_image = TF.crop(color_image, *crop_paras)
         label_image = TF.crop(label_image, *crop_paras)
         depth_image = TF.crop(depth_image, *crop_paras)
