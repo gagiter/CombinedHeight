@@ -1,13 +1,12 @@
 
 import torch.nn as nn
-import torch.nn.functional as F
 import segmentation_models_pytorch as smp
 
 
-class Net(nn.Module):
+class Model(nn.Module):
     def __init__(self):
-        super(Net, self).__init__()
-        self.unet = smp.Unet('resnet34', encoder_weights='imagenet', activation='sigmoid')
+        super(Model, self).__init__()
+        self.net = smp.Unet('resnet34', encoder_weights=None, activation='sigmoid')
 
     def forward(self, x):
-        return self.unet(x)
+        return self.net(x['color'])
